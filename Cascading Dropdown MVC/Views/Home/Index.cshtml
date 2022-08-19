@@ -1,0 +1,117 @@
+﻿@{
+    ViewBag.Title = "Home Page";
+}
+
+<div style="margin-top:10px;">
+    <table>
+        <tr>
+            <td>Select Country</td>
+            <td>
+                @Html.DropDownList("Country",ViewBag.Country as List<SelectListItem>,
+                   "Select Country", new {
+                       @id = "ddlCountry", @class="form-control"
+                   })
+            </td>
+        </tr>
+        <tr>
+            <td>Select State</td>
+            <td>
+                @Html.DropDownList("State", new SelectList(string.Empty),"Select State",
+                new
+                {
+                    @id="ddlState", @class="form-control"
+                })
+            </td>
+        </tr>
+        <tr>
+            <td>Select City</td>
+            <td>
+                @Html.DropDownList("City", new SelectList(string.Empty),"Select City",
+                new
+                {
+                    @id="ddlCity", @class="form-control"
+                })
+            </td>
+        </tr>
+    </table>
+</div>
+
+<script src = "/scripts/jquery-3.3.1.js"></script>
+@*<script type="text/javascript">
+    $(document).ready(function () {
+        $("#ddlCountry").change(function () {
+            var SelecedVal = $(this).val();
+            $("#ddlSate").html('');
+            $("#ddlSate").append($("<option></option>").attr("value", '')
+                .text('Select State'));
+            if (SelecedVal != '') {
+
+                $.fetch('/Home/GetState/',
+                    {
+                        "CountryId": SelecedVal
+                    },function (data) {
+                        $.each(data, function (index, item) {
+                            $("#ddlSate").append($("<option></option>").attr("value", item.StateId)
+                                .text(item.StateName));
+                        });
+
+                    })
+            }
+        });
+        
+            $("#ddlState").change(function () {
+                var SelectedVal = $(this).val();
+                $("#ddlCity").html('');
+                $("#ddlCity").append($("<option></option>").attr("value", '').text('Select City'));
+                if (SelectedVal != '') {
+                    $.fetch('/Home/GetCity/', { "StateId": SelectedVal })
+                        .success(function (data) {
+                            $.each(data, function (index, item) {
+                                $("#ddlCity").append($("<option></option>").attr("value", item.CityId).text(item.CityName));
+                            });
+                        })
+                }
+            }); 
+
+    })
+</script>*@
+
+<script>
+    document.getElementById("ddlCountry").addEventListener("change", function () {
+        var countryId = document.getElementById("ddlCountry").value;
+        var myUrl = `/Home/GetState?CountryId=${countryId}`;
+
+        fetch(myUrl).then(function (value) {
+            return value.json();
+        }).then(y => {
+            console.log(y);
+            var html = '';
+            var select = document.getElementById('ddlState');
+            y.forEach((element) => {
+                var opt = document.createElement('option');
+                opt.value = element.StateId;
+                opt.innerHTML = element.StateName;
+                select.appendChild(opt);
+            })
+        })
+    })
+
+    document.getElementById("ddlState").addEventListener("change", function () {
+        var stateId = document.getElementById("ddlState").value;
+        var myUrl = `/Home/GetCity?StateId=${stateId}`;
+
+        fetch(myUrl).then(function (value) {
+            return value.json();
+        }).then(y => {
+            console.log(y);
+            var html = '';
+            var select = document.getElementById('ddlCity');
+            y.forEach((element) => {
+                var opt = document.createElement('option');
+                opt.value = element.CityId;
+                opt.innerHTML = element.CityName;
+                select.appendChild(opt);
+            })
+        })
+    })
+</script>
